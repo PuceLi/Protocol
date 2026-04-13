@@ -6,6 +6,7 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #include "sculk/protocol/packet/ServerboundDataDrivenScreenClosedPacket.hpp"
+#include "../utility/EnumName.hpp"
 
 namespace sculk::protocol::inline abi_v944 {
 
@@ -19,13 +20,12 @@ std::string_view ServerboundDataDrivenScreenClosedPacket::getName() const noexce
 
 void ServerboundDataDrivenScreenClosedPacket::write(BinaryStream& stream) const {
     stream.writeOptional(mFormId, &BinaryStream::writeUnsignedInt);
-    stream.writeEnum(mCloseReason, &BinaryStream::writeByte);
+    utils::writeEnumName(stream, mCloseReason);
 }
 
 Result<> ServerboundDataDrivenScreenClosedPacket::read(ReadOnlyBinaryStream& stream) {
     if (auto status = stream.readOptional(mFormId, &ReadOnlyBinaryStream::readUnsignedInt); !status) return status;
-    if (auto status = stream.readEnum(mCloseReason, &ReadOnlyBinaryStream::readByte); !status) return status;
-    return {};
+    return utils::readEnumName(stream, mCloseReason);
 }
 
 } // namespace sculk::protocol::inline abi_v944

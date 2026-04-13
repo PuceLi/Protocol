@@ -13,7 +13,7 @@ namespace sculk::protocol::inline abi_v944 {
 
 class ClientboundDebugRendererPacket : public IPacket {
 public:
-    enum class Type : std::uint32_t {
+    enum class Type : std::uint8_t {
         Invalid            = 0,
         ClearDebugMarkers  = 1,
         AddDebugMarkerCube = 2,

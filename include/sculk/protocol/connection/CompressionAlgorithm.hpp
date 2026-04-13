@@ -6,11 +6,12 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
+#include <cstdint>
 
 namespace sculk::protocol::inline abi_v944 {
 
-enum class CompressionAlgorithm : short {
-    None   = -1,
+enum class CompressionAlgorithm : std::uint16_t {
+    None   = static_cast<std::uint16_t>(-1),
     Zlib   = 0,
     Snappy = 1,
 };

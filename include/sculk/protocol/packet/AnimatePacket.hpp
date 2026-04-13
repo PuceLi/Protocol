@@ -12,7 +12,7 @@ namespace sculk::protocol::inline abi_v944 {
 
 class AnimatePacket : public IPacket {
 public:
-    enum class Action : int {
+    enum class Action : std::uint8_t {
         NoAction         = 0,
         Swing            = 1,
         WakeUp           = 3,

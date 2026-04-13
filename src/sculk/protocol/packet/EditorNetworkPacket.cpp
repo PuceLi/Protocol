@@ -15,12 +15,14 @@ std::string_view EditorNetworkPacket::getName() const noexcept { return "EditorN
 
 void EditorNetworkPacket::write(BinaryStream& stream) const {
     stream.writeBool(mRouteToManager);
-    mBinaryPayload.write(stream);
+    stream.writeString(mRawVariantName);
+    stream.writeString(mRawVariantData);
 }
 
 Result<> EditorNetworkPacket::read(ReadOnlyBinaryStream& stream) {
     if (auto status = stream.readBool(mRouteToManager); !status) return status;
-    return mBinaryPayload.read(stream);
+    if (auto status = stream.readString(mRawVariantName); !status) return status;
+    return stream.readString(mRawVariantData);
 }
 
 } // namespace sculk::protocol::inline abi_v944
