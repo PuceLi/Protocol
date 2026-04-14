@@ -27,6 +27,11 @@ inline std::string serialize_json(const T& value) {
 }
 
 template <typename T>
+inline jsonc::json serialize_to_json(const T& value) {
+    return reflection::jsonc::serialize<false, false>(value, json_key_formatter, json_options);
+}
+
+template <typename T>
 inline Result<>
 deserialize_json(T& value, std::string_view json, std::source_location location = std::source_location::current()) {
     auto jsonObj = jsonc::jsonc::parse(json);
@@ -36,5 +41,18 @@ deserialize_json(T& value, std::string_view json, std::source_location location 
     }
     return {};
 }
+
+template <typename T>
+inline Result<> deserialize_from_json(
+    T&                   value,
+    const jsonc::json&   json,
+    std::source_location location = std::source_location::current()
+) {
+    if (!reflection::jsonc::deserialize<false, false>(value, json, json_key_formatter, json_options)) {
+        return error_utils::makeError("Failed to deserialize JSON: {}", location);
+    }
+    return {};
+}
+
 
 } // namespace sculk::protocol::inline abi_v944::utils

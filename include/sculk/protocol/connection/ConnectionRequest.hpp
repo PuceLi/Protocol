@@ -6,23 +6,26 @@
 // SPDX-License-Identifier: MPL-2.0
 
 #pragma once
-#include "sculk/protocol/connection/AuthenticationType.hpp"
+#include "AuthenticationType.hpp"
 #include "sculk/protocol/utility/deps/BinaryStream.hpp"
 #include "sculk/protocol/utility/deps/ReadOnlyBinaryStream.hpp"
-#include <string>
+#include "sculk/protocol/utility/deps/Result.hpp"
 
 namespace sculk::protocol::inline abi_v944 {
 
-struct ConnectionRequest {
-    struct LoginInfo {
+class ConnectionRequest {
+public:
+    struct AuthenticationInfo {
         AuthenticationType mAuthenticationType{};
         std::string        mCertificate{};
         std::string        mToken{};
     };
 
-    LoginInfo   mLoginInfo{};
-    std::string mClientProperties{};
+public:
+    AuthenticationInfo mAuthenticationInfo{};
+    std::string        mClientProperties{};
 
+public:
     void write(BinaryStream& stream) const;
 
     [[nodiscard]] Result<> read(ReadOnlyBinaryStream& stream);

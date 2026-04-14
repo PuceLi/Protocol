@@ -135,34 +135,6 @@ std::string es384DerToRaw(const std::uint8_t* derData, std::size_t derSize) {
 
 } // namespace
 
-Result<> JsonWebToken::load(std::string_view compactJwt) {
-    const auto first = compactJwt.find('.');
-    const auto last  = compactJwt.rfind('.');
-    if (first == std::string::npos || last == std::string::npos || first == last) {
-        return error_utils::makeError("Invalid JWT format: expected three segments separated by dots");
-    }
-
-    mRawHeader = compactJwt.substr(0, first);
-    if (auto status = utils::deserialize_json(mHeader, base64url::decode(mRawHeader)); !status) {
-        return error_utils::makeError("Failed to deserialize JWT header");
-    }
-
-    mRawPayload = compactJwt.substr(first + 1, last - first - 1);
-    if (auto status = utils::deserialize_json(mPayload, base64url::decode(mRawPayload)); !status) {
-        return error_utils::makeError("Failed to deserialize JWT payload");
-    }
-
-    mSignature = base64url::decode(compactJwt.substr(last + 1));
-
-    // ES384 signatures should be 96 bytes, RS256 signatures should be 256 bytes.
-    if ((mHeader.alg == JsonWebToken::Algorithm::ES384 && mSignature.size() != 96)
-        || (mHeader.alg == JsonWebToken::Algorithm::RS256 && mSignature.size() != 256)) {
-        return error_utils::makeError("Invalid JWT signature length");
-    }
-
-    return Result<>{};
-}
-
 JsonWebToken::Algorithm JsonWebToken::getAlgorithm() const { return mHeader.alg; }
 
 bool JsonWebToken::verifyES384(std::string_view ecPublicKeyPem) const {
@@ -187,8 +159,8 @@ bool JsonWebToken::verifyES384(std::string_view ecPublicKeyPem) const {
 
     const std::string signingInput = getSigningInput(*this);
     const bool        ok           = EVP_DigestVerifyInit(ctx.get(), nullptr, EVP_sha384(), nullptr, pkey.get()) == 1
-                 && EVP_DigestVerifyUpdate(ctx.get(), signingInput.data(), signingInput.size()) == 1
-                 && EVP_DigestVerifyFinal(ctx.get(), derSignature.data(), derSignature.size()) == 1;
+                                  && EVP_DigestVerifyUpdate(ctx.get(), signingInput.data(), signingInput.size()) == 1
+                                  && EVP_DigestVerifyFinal(ctx.get(), derSignature.data(), derSignature.size()) == 1;
 
     return ok;
 }
@@ -229,13 +201,11 @@ bool JsonWebToken::verify(std::string_view publicKeyPem) const {
     }
 }
 
-std::string JsonWebToken::signES384(std::string_view ecPrivateKeyPem) {
+std::string JsonWebToken::signES384(std::string_view eccPrivateKeyPem) {
     mHeader.alg = Algorithm::ES384;
-    mRawHeader  = base64url::encode(utils::serialize_json(mHeader));
-    mRawPayload = base64url::encode(utils::serialize_json(mPayload));
     mSignature.clear();
 
-    EvpPkeyPtr pkey = readPrivateKey(ecPrivateKeyPem);
+    EvpPkeyPtr pkey = readPrivateKey(eccPrivateKeyPem);
     if (!pkey || EVP_PKEY_base_id(pkey.get()) != EVP_PKEY_EC) {
         return {};
     }
@@ -248,8 +218,8 @@ std::string JsonWebToken::signES384(std::string_view ecPrivateKeyPem) {
     const std::string signingInput = getSigningInput(*this);
     std::size_t       derSize      = 0;
     bool              ok           = EVP_DigestSignInit(ctx.get(), nullptr, EVP_sha384(), nullptr, pkey.get()) == 1
-           && EVP_DigestSignUpdate(ctx.get(), signingInput.data(), signingInput.size()) == 1
-           && EVP_DigestSignFinal(ctx.get(), nullptr, &derSize) == 1;
+                                  && EVP_DigestSignUpdate(ctx.get(), signingInput.data(), signingInput.size()) == 1
+                                  && EVP_DigestSignFinal(ctx.get(), nullptr, &derSize) == 1;
 
     std::vector<std::uint8_t> derSignature;
     if (ok) {
@@ -276,8 +246,6 @@ std::string JsonWebToken::signES384(std::string_view ecPrivateKeyPem) {
 
 std::string JsonWebToken::signRS256(std::string_view rsaPrivateKeyPem) {
     mHeader.alg = Algorithm::RS256;
-    mRawHeader  = base64url::encode(utils::serialize_json(mHeader));
-    mRawPayload = base64url::encode(utils::serialize_json(mPayload));
     mSignature.clear();
 
     EvpPkeyPtr pkey = readPrivateKey(rsaPrivateKeyPem);
@@ -293,8 +261,8 @@ std::string JsonWebToken::signRS256(std::string_view rsaPrivateKeyPem) {
     const std::string signingInput  = getSigningInput(*this);
     std::size_t       signatureSize = 0;
     bool              ok            = EVP_DigestSignInit(ctx.get(), nullptr, EVP_sha256(), nullptr, pkey.get()) == 1
-           && EVP_DigestSignUpdate(ctx.get(), signingInput.data(), signingInput.size()) == 1
-           && EVP_DigestSignFinal(ctx.get(), nullptr, &signatureSize) == 1;
+                                   && EVP_DigestSignUpdate(ctx.get(), signingInput.data(), signingInput.size()) == 1
+                                   && EVP_DigestSignFinal(ctx.get(), nullptr, &signatureSize) == 1;
 
     std::vector<std::uint8_t> signature;
     if (ok) {

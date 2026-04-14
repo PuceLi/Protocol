@@ -46,8 +46,6 @@ public:
     std::string mSignature{};  // Decoded signature bytes (not Base64Url text)
 
 public:
-    [[nodiscard]] Result<> load(std::string_view compactJwt);
-
     [[nodiscard]] Algorithm getAlgorithm() const;
 
     [[nodiscard]] bool verifyES384(std::string_view ecPublicKeyPem) const;
@@ -56,7 +54,7 @@ public:
 
     [[nodiscard]] bool verify(std::string_view publicKeyPem) const;
 
-    [[nodiscard]] std::string signES384(std::string_view ecPrivateKeyPem);
+    [[nodiscard]] std::string signES384(std::string_view eccPrivateKeyPem);
 
     [[nodiscard]] std::string signRS256(std::string_view rsaPrivateKeyPem);
 };
