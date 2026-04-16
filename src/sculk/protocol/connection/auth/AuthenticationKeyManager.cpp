@@ -11,6 +11,7 @@ namespace sculk::protocol::inline abi_v944 {
 
 Result<> AuthenticationKeyManager::initializeMojangPublicKeyFromInternet() {
     //
+    return {};
 }
 
 } // namespace sculk::protocol::inline abi_v944

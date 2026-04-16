@@ -12,6 +12,12 @@ Protocol provides Bedrock packet models, packet ID mapping, and binary
 read/write utilities for building high-performance servers, proxies,
 analyzers, and protocol test suites.
 
+## 💬 Community
+
+Join our community:
+- Discord: `https://discord.gg/gUQ3Pnssrx`
+- QQ Group: `1063182638`
+
 ## ✨ Highlights
 
 - C++23-first implementation
@@ -111,6 +117,12 @@ Contributions are welcome.
 - Open an Issue for bug reports, feature requests, or protocol discussions.
 - Open a Pull Request for fixes, improvements, and new packet support.
 - Keep changes focused and provide clear descriptions of behavior changes.
+
+## 🙏 Acknowledgments
+
+This open source project was born with support from the closed-source paid project XXX.
+
+Support link: https://afdian.tv/a/GlacieTeam
 
 ## ⚖️ License
 
