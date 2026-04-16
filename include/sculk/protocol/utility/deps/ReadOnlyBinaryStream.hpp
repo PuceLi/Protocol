@@ -55,6 +55,9 @@ public:
     [[nodiscard]] constexpr explicit ReadOnlyBinaryStream(std::span<const std::byte> buffer) noexcept
     : mBufferView(buffer) {}
 
+    [[nodiscard]] constexpr explicit ReadOnlyBinaryStream(std::string_view buffer) noexcept
+    : mBufferView(reinterpret_cast<const std::byte*>(buffer.data()), buffer.size()) {}
+
     [[nodiscard]] constexpr std::size_t size() const noexcept { return mBufferView.size(); }
 
     [[nodiscard]] constexpr std::size_t getPosition() const noexcept { return mReadPointer; }

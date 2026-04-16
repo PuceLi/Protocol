@@ -43,3 +43,7 @@
 # build directory
 /build/
 /docs/
+
+# IDE files
+.vscode/
+.vs/
