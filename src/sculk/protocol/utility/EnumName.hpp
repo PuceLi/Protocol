@@ -9,6 +9,7 @@
 #include "sculk/protocol/utility/deps/BinaryStream.hpp"
 #include "sculk/protocol/utility/deps/ReadOnlyBinaryStream.hpp"
 #include <magic_enum/magic_enum.hpp>
+#include <charconv>
 #include <sculk/reflection/utils/string_utils.hpp>
 #include <type_traits>
 
