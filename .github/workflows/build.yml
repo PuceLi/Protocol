@@ -9,6 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          vsversion: 2022
+          arch: x64
+
       - uses: xmake-io/github-action-setup-xmake@v1
       
       - uses: actions/cache@v5
